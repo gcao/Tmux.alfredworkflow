@@ -1,15 +1,24 @@
 #!/usr/bin/env ruby
 
+require './tmux'
+
 if ARGV.length > 0
   if ARGV[0] =~ /^(\d)(\.(\d))?$/
     ARGV.shift
-    window, pane = $1, $3
-    cmd = "tmux select-window -t #{window}"
-    cmd += "; tmux select-pane -t:.#{pane.to_i - 1}" if pane
+    window, pane, rest = $1, $3, $4
+    cmd = "#{TMUX} select-window -t #{window}"
+    cmd += "; #{TMUX} select-pane -t:.#{pane.to_i - 1}" if pane
+    puts cmd
+    system cmd
+
+    target = "-t:#{window}"
+    target += ".#{pane}" if pane
+  end
+
+  if ARGV.length > 0
+    cmd = "#{TMUX} send-keys #{target} \"#{ARGV.join(' ')}\" C-m"
     puts cmd
     system cmd
   end
-
-  system "tmux send-keys -t 2 \"#{ARGV.join(' ')}\" C-m"
 end
 

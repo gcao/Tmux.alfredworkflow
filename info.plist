@@ -46,41 +46,15 @@
 		<dict>
 			<key>config</key>
 			<dict>
-				<key>action</key>
-				<integer>0</integer>
-				<key>argument</key>
-				<integer>0</integer>
-				<key>hotkey</key>
-				<integer>46</integer>
-				<key>hotmod</key>
-				<integer>1572864</integer>
-				<key>hotstring</key>
-				<string>M</string>
-				<key>leftcursor</key>
-				<false/>
-				<key>modsmode</key>
-				<integer>0</integer>
-				<key>relatedAppsMode</key>
-				<integer>0</integer>
-			</dict>
-			<key>type</key>
-			<string>alfred.workflow.trigger.hotkey</string>
-			<key>uid</key>
-			<string>22E9A42F-5843-45F0-8BF2-ADFAE6F27156</string>
-			<key>version</key>
-			<integer>1</integer>
-		</dict>
-		<dict>
-			<key>config</key>
-			<dict>
 				<key>concurrently</key>
 				<false/>
 				<key>escaping</key>
 				<integer>102</integer>
 				<key>script</key>
 				<string>query="{query}"
-/usr/local/bin/tmux select-window -t $query
-osascript -e "tell application \"iTerm\" to activate"</string>
+#/usr/local/bin/tmux select-window -t $query
+ruby run.rb {query}
+osascript -e "tell application \"iTerm 3\" to activate"</string>
 				<key>type</key>
 				<integer>0</integer>
 			</dict>
@@ -109,7 +83,7 @@ osascript -e "tell application \"iTerm\" to activate"</string>
 				<key>queuemode</key>
 				<integer>1</integer>
 				<key>script</key>
-				<string>ruby tmux.rb "{query}"</string>
+				<string>ruby filter.rb "{query}"</string>
 				<key>title</key>
 				<string>Tmux</string>
 				<key>type</key>
@@ -123,6 +97,33 @@ osascript -e "tell application \"iTerm\" to activate"</string>
 			<string>B09293E6-A46E-4D5C-AAD0-ED37C7CC0DE4</string>
 			<key>version</key>
 			<integer>0</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>action</key>
+				<integer>0</integer>
+				<key>argument</key>
+				<integer>0</integer>
+				<key>hotkey</key>
+				<integer>46</integer>
+				<key>hotmod</key>
+				<integer>1572864</integer>
+				<key>hotstring</key>
+				<string>M</string>
+				<key>leftcursor</key>
+				<false/>
+				<key>modsmode</key>
+				<integer>0</integer>
+				<key>relatedAppsMode</key>
+				<integer>0</integer>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.trigger.hotkey</string>
+			<key>uid</key>
+			<string>22E9A42F-5843-45F0-8BF2-ADFAE6F27156</string>
+			<key>version</key>
+			<integer>1</integer>
 		</dict>
 	</array>
 	<key>readme</key>
