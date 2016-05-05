@@ -31,9 +31,11 @@ class TmuxWindow
   def initialize representation
     representation =~ /^(\d+):\s+([^(]+)?-?(\*)?Z?\s+\(([^)]+)\)/
     @index     = $1
-    @name      = $2.to_s.strip.sub(/Z$/, '').sub(/-$/, '')
+    @name      = $2.to_s.strip
     @active    = !!$3
     @panes_str = $4
+
+    @name = @name.sub(/Z$/, '').sub(/-$/, '')
   end
 
   def panes
