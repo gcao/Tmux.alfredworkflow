@@ -27,6 +27,7 @@ builder = Nokogiri::XML::Builder.new do |xml|
         xml.title pane.to_alfred_title.gsub(/<[^>]+>/, '')
       end
       pane.history.each do |entry|
+        next if command and entry.command !~ /#{command.gsub(//, '.*')}/i
         xml.item(arg: "#{pane.to_alfred_arg} #{entry.command}", uid: rand) do
           xml.title entry.to_alfred_title
         end

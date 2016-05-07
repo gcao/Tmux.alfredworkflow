@@ -161,7 +161,7 @@ module Tmux
         dir = $2
         cmd = $3
         matched = $1
-        # 20 is added to fix skipping some commands, this is still to be investigated
+        # 20 is added to fix some commands was skipped. This is still to be investigated
         end_index -= matched.length - 20
         entry = HistoryEntry.new dir.strip, cmd.strip
         history.push entry unless %w(fg).include?(entry.command) or history.include?(entry)
