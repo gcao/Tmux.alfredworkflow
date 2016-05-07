@@ -14,9 +14,21 @@ class TmuxWindow
     end
   end
 
-  # i is like 1,2,...,9,0
+  # i is like 1,2,...,9,0 or part of window name
   def self.find i
-    all[(i.to_i + 10)%11]
+    if i =~ /^\d$/
+      all[(i.to_i + 10)%11]
+    else
+      found = all.select do |window|
+        window.name =~ /#{i.gsub(//, '.*')}/i
+      end
+
+      if found.size == 1
+        found[0]
+      else
+        found
+      end
+    end
   end
 
   #1: Z (3 panes) [204x67] [layout cc9f,204x67,0,0,2] @1
@@ -45,7 +57,7 @@ class TmuxWindow
   end
 
   def to_alfred_title
-    "Window #{@index}. #{@name}"
+    "#{@index}. #{@name}"
   end
 
 end
@@ -65,7 +77,7 @@ class TmuxPane
   end
 
   def to_alfred_title
-    title = "#{@parent.to_alfred_title}  -> Pane #{@index}"
+    title = "#{@parent.to_alfred_title}  => Pane #{@index}"
     title += " *" if @active
     title
   end

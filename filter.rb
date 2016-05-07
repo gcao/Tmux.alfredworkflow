@@ -11,6 +11,10 @@ if ARGV[0] =~ /^(\d)(\d)?(.*)$/
   window_arg = $1
   pane_arg   = $2
   command    = $3
+elsif ARGV[0] =~ /^([^\d]+)(\d)?(.*)$/
+  window_arg = $1
+  pane_arg   = $2
+  command    = $3
 else
   command = ARGV[0]
 end
@@ -25,18 +29,28 @@ builder = Nokogiri::XML::Builder.new do |xml|
         xml.title pane.to_alfred_title
       }
     elsif window_arg
-      window = TmuxWindow.find(window_arg)
-      window.panes.each {|pane|
-        arg = "#{window.index} #{command}"
-        xml.item(arg: arg, uid: window.index) {
-          xml.title pane.to_alfred_title
+      found = TmuxWindow.find(window_arg)
+      if found.is_a? TmuxWindow
+        found.panes.each {|pane|
+          arg = "#{found.index} #{command}"
+          xml.item(arg: arg, uid: found.index) {
+            xml.title pane.to_alfred_title
+          }
         }
-      }
+      else
+        found.each {|window|
+          arg = "#{window.index} #{command}"
+          xml.item(arg: arg, uid: window.index) {
+            xml.title window.to_alfred_title
+            xml.subtitle window.panes_str
+          }
+        }
+      end
     else
-      TmuxWindow.all.each_with_index {|window, i|
+      TmuxWindow.all.each {|window|
         arg = "#{window.index} #{command}"
         xml.item(arg: arg, uid: window.index) {
-          xml.title "Window #{window.index}. #{window.name}"
+          xml.title window.to_alfred_title
           xml.subtitle window.panes_str
         }
       }
