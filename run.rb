@@ -16,9 +16,9 @@ end
 if ARGV[0] =~ /^(\d)(\.(\d))?$/
   ARGV.shift
   window, pane = $1, $3
-  cmd = "#{TMUX} select-window -t "
-  cmd += window.to_i == 0 ? '10' : window
-  cmd += "; #{TMUX} select-pane -t:.#{pane.to_i - 1}" if pane
+  cmd = "#{Tmux::PATH} select-window -t "
+  cmd += window.to_i == 0 ? '10
+  cmd += "; #{Tmux::PATH} select-pane -t:.#{pane.to_i - 1}" if pane
   puts cmd
   system cmd
 
@@ -27,6 +27,6 @@ if ARGV[0] =~ /^(\d)(\.(\d))?$/
 end
 
 if ARGV.length > 0
-  system "#{TMUX} send-keys #{target} \"#{ARGV.join(' ')}\" C-m"
+  system "#{Tmux::PATH} send-keys #{target} \"#{ARGV.join(' ')}\" C-m"
 end
 
