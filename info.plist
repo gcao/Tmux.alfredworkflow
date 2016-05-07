@@ -106,11 +106,11 @@ osascript -e "tell application \"iTerm 3\" to activate"</string>
 				<key>argument</key>
 				<integer>0</integer>
 				<key>hotkey</key>
-				<integer>46</integer>
+				<integer>34</integer>
 				<key>hotmod</key>
-				<integer>1572864</integer>
+				<integer>1835008</integer>
 				<key>hotstring</key>
-				<string>M</string>
+				<string>I</string>
 				<key>leftcursor</key>
 				<false/>
 				<key>modsmode</key>
