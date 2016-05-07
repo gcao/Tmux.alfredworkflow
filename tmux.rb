@@ -1,4 +1,4 @@
-#!/usr/bin/env ruby
+# encoding: UTF-8
 
 TMUX = "/usr/local/bin/tmux"
 
@@ -16,8 +16,10 @@ class TmuxWindow
 
   # i is like 1,2,...,9,0 or part of window name
   def self.find i
-    if i =~ /^\d$/
-      all[(i.to_i + 10)%11]
+    if i =~ /^0$/
+      all[9]
+    elsif i =~ /^\d$/
+      all[i.to_i - 1]
     else
       found = all.select do |window|
         window.name =~ /#{i.gsub(//, '.*')}/i
@@ -76,10 +78,34 @@ class TmuxPane
     @active = !!$2
   end
 
+  def buffer
+    `#{TMUX} capture-pane -t:#{@parent.index}.#{@index - 1} -p -S -200`.strip.lines
+  end
+
+  def process
+    #http://stackoverflow.com/questions/9560768/how-do-you-use-unicode-characters-within-a-regular-expression-in-ruby
+    # \uE0B0 = 
+    case buffer.last.encode('utf-8', 'utf-8')
+    when /(^ [A-Z]+ \uE0B0)|\uE0A1/ then "vim"
+    when / ([^\uE0B0]*[\/~][^\uE0B0]*) \uE0B0/    then "#{$1} $"
+    when /\$( |$)/                  then buffer.last
+    else
+      if buffer[-2] && buffer[-2].encode('utf-8', 'utf-8') =~ /(^ [A-Z]+ \uE0B0)|\uE0A1/
+        "vim"
+      else
+        "Other long-running process"
+      end
+    end
+  end
+
   def to_alfred_title
     title = "#{@parent.to_alfred_title}  => Pane #{@index}"
-    title += " *" if @active
-    title
+    if @active
+      title += " * "
+    else
+      title += "   "
+    end
+    "#{title} #{process}"
   end
 
   def to_alfred_arg
