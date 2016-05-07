@@ -30,14 +30,14 @@ builder = Nokogiri::XML::Builder.new do |xml|
       found = TmuxWindow.find(window_arg)
       if found.is_a? TmuxWindow
         found.panes.each {|pane|
-          arg = "#{found.index} #{command}"
-          xml.item(arg: arg, uid: found.index) {
+          arg = "#{pane.to_alfred_arg} #{command}"
+          xml.item(arg: arg, uid: pane.to_alfred_uid) {
             xml.title pane.to_alfred_title
           }
         }
       else
         found.each {|window|
-          arg = "#{window.index} #{command}"
+          arg = "#{window.to_alfred_arg} #{command}"
           xml.item(arg: arg, uid: window.index) {
             xml.title window.to_alfred_title
             xml.subtitle window.panes_str
@@ -46,7 +46,7 @@ builder = Nokogiri::XML::Builder.new do |xml|
       end
     else
       TmuxWindow.all.each {|window|
-        arg = "#{window.index} #{command}"
+        arg = "#{window.to_alfred_arg} #{command}"
         xml.item(arg: arg, uid: window.index) {
           xml.title window.to_alfred_title
           xml.subtitle window.panes_str

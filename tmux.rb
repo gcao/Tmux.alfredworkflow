@@ -58,6 +58,10 @@ class TmuxWindow
     }
   end
 
+  def to_alfred_arg
+    @index.to_i % 10
+  end
+
   def to_alfred_title
     "#{@index}. #{@name}"
   end
@@ -109,7 +113,7 @@ class TmuxPane
   end
 
   def to_alfred_arg
-    "#{@parent.index}.#{@index}"
+    "#{@parent.to_alfred_arg}.#{@index}"
   end
 
   def to_alfred_uid
