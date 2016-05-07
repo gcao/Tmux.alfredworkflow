@@ -3,6 +3,19 @@
 module Tmux
   PATH = ENV['TMUX_PATH'] || "/usr/local/bin/tmux"
 
+  class HistoryEntry
+    attr :dir
+    attr :command
+
+    def initialize dir, command
+      @dir, @command = dir, command
+    end
+
+    def to_alfred_title
+      "#{@dir} $   #{@command}"
+    end
+  end
+
   class Window
     attr :name
     attr :index
@@ -114,24 +127,47 @@ module Tmux
       @active = !!$2
     end
 
-    def buffer
-      `#{PATH} capture-pane -t:#{@parent.index}.#{@index - 1} -p -S -200`.encode('utf-8', 'utf-8').strip.lines
+    def buffer start_line = 0
+      `#{PATH} capture-pane -t:#{@parent.index}.#{@index - 1} -p -S #{start_line}`.encode('utf-8', 'utf-8').strip
     end
 
     def process
       #http://stackoverflow.com/questions/9560768/how-do-you-use-unicode-characters-within-a-regular-expression-in-ruby
       # \uE0B0 = 
-      case buffer.last.encode('utf-8', 'utf-8')
-      when /(^ [A-Z]+ \uE0B0)|\uE0A1/ then "vim"
-      when / ([^\uE0B0]*[\/~][^\uE0B0]*) \uE0B0/    then "#{$1} $"
-      when /\$( |$)/                  then buffer.last
+      lines = buffer.lines
+      case lines.last.encode('utf-8', 'utf-8')
+      when /(^ [A-Z]+ \uE0B0)|\uE0A1/            then "vim"
+      when / ([^\uE0B0]*[\/~][^\uE0B0]*) \uE0B0/ then "#{$1} $"
+      when /\$( |$)/                             then lines.last
       else
-        if buffer[-2] && buffer[-2].encode('utf-8', 'utf-8') =~ /(^ [A-Z]+ \uE0B0)|\uE0A1/
+        if lines[-2] && lines[-2].encode('utf-8', 'utf-8') =~ /(^ [A-Z]+ \uE0B0)|\uE0A1/
           "vim"
         else
           "Other long-running process"
         end
       end
+    end
+
+    def history
+      return [] if process =~ /vim|long-running/
+
+      history = []
+      s = buffer(-500)
+      end_index = s.length
+
+      while history.length < 10
+        break unless end_index = s.rindex(/( ([~\/][^\n\uE0B0]*)[^\n]*\uE0B0[ ]+([^\n\uE0B0]+)(\n|$))/, end_index)
+
+        dir = $2
+        cmd = $3
+        matched = $1
+        # 20 is added to fix skipping some commands, this is still to be investigated
+        end_index -= matched.length - 20
+        entry = HistoryEntry.new dir.strip, cmd.strip
+        history.push entry unless %w(fg).include?(entry.command) or history.include?(entry)
+      end
+
+      history
     end
 
     def to_alfred_title
@@ -153,5 +189,13 @@ module Tmux
     end
   end
 
+end
+
+if __FILE__ == $0
+  pane = Tmux::Window.find('6').panes[2]
+  puts pane.buffer(-500)
+  pane.history.each do |entry|
+    puts entry.to_alfred_title
+  end
 end
 
