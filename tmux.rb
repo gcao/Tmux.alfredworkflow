@@ -2,6 +2,7 @@
 
 module Tmux
   PATH = ENV['TMUX_PATH'] || "/usr/local/bin/tmux"
+  LINES_TO_LOOK_BACK = 1000
 
   class HistoryEntry
     attr :dir
@@ -99,8 +100,7 @@ module Tmux
     end
 
     def to_alfred_subtitle
-      #"#{@panes_str}: #{panes.map{|pane| "<#{pane.index}> #{pane.process}"}.join('   ') }"
-      panes.map {|pane|
+      '      ' + panes.map {|pane|
         s = pane.index.to_s
         if pane.active
           s = "<#{s}> "
@@ -143,7 +143,7 @@ module Tmux
         if lines[-2] && lines[-2].encode('utf-8', 'utf-8') =~ /(^ [A-Z]+ \uE0B0)|\uE0A1/
           "vim"
         else
-          "Other long-running process"
+          "Long-running process"
         end
       end
     end
@@ -151,20 +151,24 @@ module Tmux
     def history
       return [] if process =~ /vim|long-running/
 
+      STDERR.puts 'history'
       history = []
-      s = buffer(-500)
+      s = buffer(-1 * LINES_TO_LOOK_BACK)
       end_index = s.length
 
       while history.length < 10
+        STDERR.puts end_index
         break unless end_index = s.rindex(/( ([~\/][^\n\uE0B0]*)[^\n]*\uE0B0[ ]+([^\n\uE0B0]+)(\n|$))/, end_index)
 
         dir = $2
         cmd = $3
         matched = $1
+        adjust = matched.length
         # 20 is added to fix some commands was skipped. This is still to be investigated
-        end_index -= matched.length - 20
+        adjust -= 20 if adjust > 25
+        end_index -= adjust
         entry = HistoryEntry.new dir.strip, cmd.strip
-        history.push entry unless %w(fg).include?(entry.command) or history.include?(entry)
+        history.push entry unless %w(fg).include?(entry.command) or history.index{|e| e.command == entry.command }
       end
 
       history
@@ -192,7 +196,7 @@ module Tmux
 end
 
 if __FILE__ == $0
-  pane = Tmux::Window.find('6').panes[2]
+  pane = Tmux::Window.find('2').panes[1]
   puts pane.buffer(-500)
   pane.history.each do |entry|
     puts entry.to_alfred_title
