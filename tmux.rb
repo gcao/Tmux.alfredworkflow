@@ -45,7 +45,7 @@ module Tmux
         all[i.to_i - 1]
       else
         found = all.select do |window|
-          window.name =~ /#{i.gsub(//, '.*')}/i
+          window.name =~ /#{i.gsub(/ /, '.* .*').gsub(/^|$/, '.*')}/i
         end
 
         if found.size == 1
@@ -128,7 +128,7 @@ module Tmux
     end
 
     def buffer start_line = 0
-      `#{PATH} capture-pane -t:#{@parent.index}.#{@index - 1} -p -S #{start_line}`.encode('utf-8', 'utf-8').strip
+      `#{PATH} capture-pane -t:#{@parent.index}.#{@index - 1} -p -J -S #{start_line}`.encode('utf-8', 'utf-8').rstrip
     end
 
     def process
@@ -149,7 +149,7 @@ module Tmux
     end
 
     def history
-      return [] if process =~ /vim|long-running/
+      return [] if process =~ /vim|long-running/i
 
       STDERR.puts 'history'
       history = []
@@ -160,6 +160,7 @@ module Tmux
         STDERR.puts end_index
         break unless end_index = s.rindex(/( ([~\/][^\n\uE0B0]*)[^\n]*\uE0B0[ ]+([^\n\uE0B0]+)(\n|$))/, end_index)
 
+        STDERR.puts $&
         dir = $2
         cmd = $3
         matched = $1
@@ -196,7 +197,7 @@ module Tmux
 end
 
 if __FILE__ == $0
-  pane = Tmux::Window.find('2').panes[1]
+  pane = Tmux::Window.find('4').panes[1]
   puts pane.buffer(-500)
   pane.history.each do |entry|
     puts entry.to_alfred_title
