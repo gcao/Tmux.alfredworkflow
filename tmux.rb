@@ -75,9 +75,9 @@ module Tmux
     end
 
     def panes
-      @panes ||= `#{PATH} list-panes -t #{@index}`.lines.map {|line|
+      @panes ||= `#{PATH} list-panes -t #{@index}`.lines.map do |line|
         Pane.new self, line
-      }
+      end
     end
 
     def to_alfred_arg
