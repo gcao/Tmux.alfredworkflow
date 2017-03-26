@@ -13,7 +13,7 @@ Usage:
   exit 0
 end
 
-if ARGV[0] =~ /^(\d)(\.(\d))?$/
+if ARGV[0] =~ /^(\d+)(\.(\d))?$/
   ARGV.shift
   window, pane = $1, $3
   cmd = "#{Tmux::PATH} select-window -t "

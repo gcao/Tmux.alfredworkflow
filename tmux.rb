@@ -5,15 +5,20 @@ module Tmux
   LINES_TO_LOOK_BACK = 1000
 
   class HistoryEntry
+    attr :parent
     attr :dir
     attr :command
 
-    def initialize dir, command
-      @dir, @command = dir, command
+    def initialize parent, dir, command
+      @parent, @dir, @command = parent, dir, command
+    end
+
+    def to_alfred_arg
+      "#{parent.to_alfred_arg} #{@command}"
     end
 
     def to_alfred_title
-      "#{@dir} $   #{@command}"
+      "#{parent.to_short_title} #{@dir} $   #{@command}"
     end
   end
 
@@ -39,8 +44,12 @@ module Tmux
 
     # i is like 1,2,...,9,0 or part of window name
     def self.find i
-      if i =~ /^0$/
+      if i == '0'
         all[9]
+      elsif i == '-'
+        all[10]
+      elsif i == '='
+        all[11]
       elsif i =~ /^\d$/
         all[i.to_i - 1]
       else
@@ -81,7 +90,17 @@ module Tmux
     end
 
     def to_alfred_arg
-      @index.to_i % 10
+      @index.to_i
+    end
+
+    def to_alfred_autocomplete
+      if @index.to_i == 11
+        '-'
+      elsif @index.to_i == 12
+        '='
+      else
+        @index.to_i % 10
+      end
     end
 
     def to_alfred_uid
@@ -156,9 +175,15 @@ module Tmux
       s = buffer(-1 * LINES_TO_LOOK_BACK)
       end_index = s.length
 
-      while history.length < 10
+      try_count = 50
+
+      while history.length < 20
+        try_count -= 1
+        break if try_count == 0
+
         STDERR.puts end_index
-        break unless end_index = s.rindex(/( ([~\/][^\n\uE0B0]*)[^\n]*\uE0B0[ ]+([^\n\uE0B0]+)(\n|$))/, end_index)
+        end_index = s.rindex(/( ([~\/][^\n\uE0B0]*)[^\n]*\uE0B0[ ]+([^\n\uE0B0]+)(\n|$))/, end_index)
+        break unless end_index
 
         STDERR.puts $&
         dir = $2
@@ -168,7 +193,7 @@ module Tmux
         # 20 is added to fix some commands was skipped. This is still to be investigated
         adjust -= 20 if adjust > 25
         end_index -= adjust
-        entry = HistoryEntry.new dir.strip, cmd.strip
+        entry = HistoryEntry.new self, dir.strip, cmd.strip
         history.push entry unless %w(fg).include?(entry.command) or history.index{|e| e.command == entry.command }
       end
 
@@ -191,6 +216,14 @@ module Tmux
 
     def to_alfred_uid
       "#{@parent.index}.#{@index}"
+    end
+
+    def to_alfred_autocomplete
+      "#{@parent.to_alfred_autocomplete}#{@index}"
+    end
+
+    def to_short_title
+      "#{to_alfred_uid} #{@parent.name}"
     end
   end
 
