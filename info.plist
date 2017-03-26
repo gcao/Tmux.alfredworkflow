@@ -17,6 +17,8 @@
 				<integer>0</integer>
 				<key>modifiersubtext</key>
 				<string></string>
+				<key>vitoclose</key>
+				<false/>
 			</dict>
 		</array>
 		<key>B09293E6-A46E-4D5C-AAD0-ED37C7CC0DE4</key>
@@ -28,6 +30,8 @@
 				<integer>0</integer>
 				<key>modifiersubtext</key>
 				<string></string>
+				<key>vitoclose</key>
+				<false/>
 			</dict>
 		</array>
 		<key>ED0B4832-AB12-4548-934D-105736FB57CD</key>
@@ -49,12 +53,16 @@
 				<key>concurrently</key>
 				<false/>
 				<key>escaping</key>
-				<integer>102</integer>
+				<integer>118</integer>
 				<key>script</key>
 				<string>query="{query}"
 #/usr/local/bin/tmux select-window -t $query
 ruby run.rb {query}
 osascript -e "tell application \"iTerm\" to activate"</string>
+				<key>scriptargtype</key>
+				<integer>0</integer>
+				<key>scriptfile</key>
+				<string></string>
 				<key>type</key>
 				<integer>0</integer>
 			</dict>
@@ -63,11 +71,13 @@ osascript -e "tell application \"iTerm\" to activate"</string>
 			<key>uid</key>
 			<string>ED0B4832-AB12-4548-934D-105736FB57CD</string>
 			<key>version</key>
-			<integer>0</integer>
+			<integer>2</integer>
 		</dict>
 		<dict>
 			<key>config</key>
 			<dict>
+				<key>alfredfiltersresults</key>
+				<false/>
 				<key>argumenttype</key>
 				<integer>1</integer>
 				<key>escaping</key>
@@ -82,8 +92,16 @@ osascript -e "tell application \"iTerm\" to activate"</string>
 				<integer>0</integer>
 				<key>queuemode</key>
 				<integer>1</integer>
+				<key>runningsubtext</key>
+				<string></string>
 				<key>script</key>
 				<string>ruby filter.rb "{query}"</string>
+				<key>scriptargtype</key>
+				<integer>0</integer>
+				<key>scriptfile</key>
+				<string></string>
+				<key>subtext</key>
+				<string></string>
 				<key>title</key>
 				<string>Tmux</string>
 				<key>type</key>
@@ -96,7 +114,7 @@ osascript -e "tell application \"iTerm\" to activate"</string>
 			<key>uid</key>
 			<string>B09293E6-A46E-4D5C-AAD0-ED37C7CC0DE4</string>
 			<key>version</key>
-			<integer>0</integer>
+			<integer>2</integer>
 		</dict>
 		<dict>
 			<key>config</key>
@@ -105,6 +123,10 @@ osascript -e "tell application \"iTerm\" to activate"</string>
 				<integer>0</integer>
 				<key>argument</key>
 				<integer>0</integer>
+				<key>focusedappvariable</key>
+				<false/>
+				<key>focusedappvariablename</key>
+				<string></string>
 				<key>hotkey</key>
 				<integer>34</integer>
 				<key>hotmod</key>
@@ -123,7 +145,7 @@ osascript -e "tell application \"iTerm\" to activate"</string>
 			<key>uid</key>
 			<string>22E9A42F-5843-45F0-8BF2-ADFAE6F27156</string>
 			<key>version</key>
-			<integer>1</integer>
+			<integer>2</integer>
 		</dict>
 	</array>
 	<key>readme</key>
@@ -132,16 +154,22 @@ osascript -e "tell application \"iTerm\" to activate"</string>
 	<dict>
 		<key>22E9A42F-5843-45F0-8BF2-ADFAE6F27156</key>
 		<dict>
+			<key>xpos</key>
+			<integer>100</integer>
 			<key>ypos</key>
 			<real>60</real>
 		</dict>
 		<key>B09293E6-A46E-4D5C-AAD0-ED37C7CC0DE4</key>
 		<dict>
+			<key>xpos</key>
+			<integer>300</integer>
 			<key>ypos</key>
 			<real>60</real>
 		</dict>
 		<key>ED0B4832-AB12-4548-934D-105736FB57CD</key>
 		<dict>
+			<key>xpos</key>
+			<integer>500</integer>
 			<key>ypos</key>
 			<real>60</real>
 		</dict>

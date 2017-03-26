@@ -13,8 +13,16 @@ module Tmux
       @parent, @dir, @command = parent, dir, command
     end
 
+    def in_different_dir?
+      dir != parent.dir
+    end
+
     def to_alfred_arg
-      "#{parent.to_alfred_arg} #{@command}"
+      if in_different_dir?
+        "#{parent.to_alfred_arg} cd #{dir}; #{@command}"
+      else
+        "#{parent.to_alfred_arg} #{@command}"
+      end
     end
 
     def to_alfred_title
@@ -148,6 +156,17 @@ module Tmux
 
     def buffer start_line = 0
       `#{PATH} capture-pane -t:#{@parent.index}.#{@index - 1} -p -J -S #{start_line}`.encode('utf-8', 'utf-8').rstrip
+    end
+
+    def dir
+      if not @dir
+        last_line = buffer.lines.last
+        if last_line.encode('utf-8', 'utf-8') =~ / ([^\uE0B0]*[\/~][^\uE0B0]*) \uE0B0/
+          @dir = $1
+        end
+      end
+
+      @dir
     end
 
     def process
