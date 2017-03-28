@@ -34,6 +34,19 @@
 				<false/>
 			</dict>
 		</array>
+		<key>B4F32712-C109-4988-8891-30AC8AF57443</key>
+		<array>
+			<dict>
+				<key>destinationuid</key>
+				<string>157128C9-A402-4810-92B8-5203D4C6909A</string>
+				<key>modifiers</key>
+				<integer>0</integer>
+				<key>modifiersubtext</key>
+				<string></string>
+				<key>vitoclose</key>
+				<false/>
+			</dict>
+		</array>
 		<key>ED0B4832-AB12-4548-934D-105736FB57CD</key>
 		<array/>
 	</dict>
@@ -47,6 +60,37 @@
 	<string>Tmux</string>
 	<key>objects</key>
 	<array>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>action</key>
+				<integer>0</integer>
+				<key>argument</key>
+				<integer>0</integer>
+				<key>focusedappvariable</key>
+				<false/>
+				<key>focusedappvariablename</key>
+				<string></string>
+				<key>hotkey</key>
+				<integer>34</integer>
+				<key>hotmod</key>
+				<integer>393216</integer>
+				<key>hotstring</key>
+				<string>I</string>
+				<key>leftcursor</key>
+				<false/>
+				<key>modsmode</key>
+				<integer>0</integer>
+				<key>relatedAppsMode</key>
+				<integer>0</integer>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.trigger.hotkey</string>
+			<key>uid</key>
+			<string>22E9A42F-5843-45F0-8BF2-ADFAE6F27156</string>
+			<key>version</key>
+			<integer>2</integer>
+		</dict>
 		<dict>
 			<key>config</key>
 			<dict>
@@ -119,6 +163,29 @@ osascript -e "tell application \"iTerm\" to activate"</string>
 		<dict>
 			<key>config</key>
 			<dict>
+				<key>concurrently</key>
+				<false/>
+				<key>escaping</key>
+				<integer>118</integer>
+				<key>script</key>
+				<string>ruby restart.rb</string>
+				<key>scriptargtype</key>
+				<integer>0</integer>
+				<key>scriptfile</key>
+				<string></string>
+				<key>type</key>
+				<integer>0</integer>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.action.script</string>
+			<key>uid</key>
+			<string>157128C9-A402-4810-92B8-5203D4C6909A</string>
+			<key>version</key>
+			<integer>2</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
 				<key>action</key>
 				<integer>0</integer>
 				<key>argument</key>
@@ -128,11 +195,11 @@ osascript -e "tell application \"iTerm\" to activate"</string>
 				<key>focusedappvariablename</key>
 				<string></string>
 				<key>hotkey</key>
-				<integer>34</integer>
+				<integer>15</integer>
 				<key>hotmod</key>
 				<integer>393216</integer>
 				<key>hotstring</key>
-				<string>I</string>
+				<string>R</string>
 				<key>leftcursor</key>
 				<false/>
 				<key>modsmode</key>
@@ -143,7 +210,7 @@ osascript -e "tell application \"iTerm\" to activate"</string>
 			<key>type</key>
 			<string>alfred.workflow.trigger.hotkey</string>
 			<key>uid</key>
-			<string>22E9A42F-5843-45F0-8BF2-ADFAE6F27156</string>
+			<string>B4F32712-C109-4988-8891-30AC8AF57443</string>
 			<key>version</key>
 			<integer>2</integer>
 		</dict>
@@ -152,6 +219,13 @@ osascript -e "tell application \"iTerm\" to activate"</string>
 	<string></string>
 	<key>uidata</key>
 	<dict>
+		<key>157128C9-A402-4810-92B8-5203D4C6909A</key>
+		<dict>
+			<key>xpos</key>
+			<integer>500</integer>
+			<key>ypos</key>
+			<integer>210</integer>
+		</dict>
 		<key>22E9A42F-5843-45F0-8BF2-ADFAE6F27156</key>
 		<dict>
 			<key>xpos</key>
@@ -165,6 +239,13 @@ osascript -e "tell application \"iTerm\" to activate"</string>
 			<integer>300</integer>
 			<key>ypos</key>
 			<real>60</real>
+		</dict>
+		<key>B4F32712-C109-4988-8891-30AC8AF57443</key>
+		<dict>
+			<key>xpos</key>
+			<integer>100</integer>
+			<key>ypos</key>
+			<integer>210</integer>
 		</dict>
 		<key>ED0B4832-AB12-4548-934D-105736FB57CD</key>
 		<dict>

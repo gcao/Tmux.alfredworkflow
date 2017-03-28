@@ -4,6 +4,10 @@ module Tmux
   PATH = ENV['TMUX_PATH'] || "/usr/local/bin/tmux"
   LINES_TO_LOOK_BACK = 1000
 
+  def self.active_window
+    Window.active
+  end
+
   class HistoryEntry
     attr :parent
     attr :dir
@@ -52,7 +56,9 @@ module Tmux
 
     # i is like 1,2,...,9,0 or part of window name
     def self.find i
-      if i == '0'
+      if i == ','
+        active
+      elsif i == '0'
         all[9]
       elsif i == '-'
         all[10]
@@ -95,6 +101,10 @@ module Tmux
       @panes ||= `#{PATH} list-panes -t #{@index}`.lines.map do |line|
         Pane.new self, line
       end
+    end
+
+    def active_pane
+      panes.find {|pane| pane.active }
     end
 
     def to_alfred_arg
