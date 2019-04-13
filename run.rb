@@ -26,7 +26,7 @@ if ARGV[0] =~ /^(\d+)(\.(\d))?$/
   target += ".#{pane.to_i - 1}" if pane
 end
 
-if ARGV == ['restart']
+if ['re', 'restart'].include? ARGV[0]
   system "#{Tmux::PATH} send-keys #{target} C-c '!!' C-m C-m"
 elsif ARGV.length > 0
   system "#{Tmux::PATH} send-keys #{target} \"#{ARGV.join(' ')}\" C-m"

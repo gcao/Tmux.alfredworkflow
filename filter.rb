@@ -5,7 +5,7 @@ require "./tmux"
 # There are 12 windows, represented by 1,...,9,0,-,=
 # First digit represents window id
 # Optional second digit represents pane id (start from 1)
-if ARGV[0] =~ /^(\d|[,-=])(\d|[,])?(.*)$/
+if ARGV[0] =~ /^(\d|[,;\-=])(\d|[,;])?(.*)$/
   window_arg = $1
   pane_arg   = $2
   command    = $3
@@ -21,7 +21,7 @@ builder = Nokogiri::XML::Builder.new do |xml|
   xml.items do
     if pane_arg
       window = Tmux::Window.find(window_arg)
-      pane = pane_arg == ',' ? window.active_pane : window.panes[pane_arg.to_i - 1]
+      pane = [',', ';'].include?(pane_arg) ? window.active_pane : window.panes[pane_arg.to_i - 1]
       arg = "#{pane.to_alfred_arg} #{command}"
       xml.item(arg: arg, uid: pane.to_alfred_uid, autocomplete: pane.to_alfred_autocomplete) do
         xml.title pane.to_alfred_title.gsub(/<[^>]+>/, '')
