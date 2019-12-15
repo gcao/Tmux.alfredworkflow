@@ -122,6 +122,10 @@ osascript -e "tell application \"iTerm\" to activate"</string>
 			<dict>
 				<key>alfredfiltersresults</key>
 				<false/>
+				<key>alfredfiltersresultsmatchmode</key>
+				<integer>0</integer>
+				<key>argumenttrimmode</key>
+				<integer>0</integer>
 				<key>argumenttype</key>
 				<integer>1</integer>
 				<key>escaping</key>
@@ -224,35 +228,35 @@ osascript -e "tell application \"iTerm\" to activate"</string>
 			<key>xpos</key>
 			<integer>500</integer>
 			<key>ypos</key>
-			<integer>210</integer>
+			<integer>290</integer>
 		</dict>
 		<key>22E9A42F-5843-45F0-8BF2-ADFAE6F27156</key>
 		<dict>
 			<key>xpos</key>
 			<integer>100</integer>
 			<key>ypos</key>
-			<real>60</real>
+			<integer>140</integer>
 		</dict>
 		<key>B09293E6-A46E-4D5C-AAD0-ED37C7CC0DE4</key>
 		<dict>
 			<key>xpos</key>
 			<integer>300</integer>
 			<key>ypos</key>
-			<real>60</real>
+			<integer>140</integer>
 		</dict>
 		<key>B4F32712-C109-4988-8891-30AC8AF57443</key>
 		<dict>
 			<key>xpos</key>
 			<integer>100</integer>
 			<key>ypos</key>
-			<integer>210</integer>
+			<integer>290</integer>
 		</dict>
 		<key>ED0B4832-AB12-4548-934D-105736FB57CD</key>
 		<dict>
 			<key>xpos</key>
 			<integer>500</integer>
 			<key>ypos</key>
-			<real>60</real>
+			<integer>140</integer>
 		</dict>
 	</dict>
 	<key>webaddress</key>

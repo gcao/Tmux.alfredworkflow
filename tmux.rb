@@ -56,8 +56,10 @@ module Tmux
 
     # i is like 1,2,...,9,0 or part of window name
     def self.find i
-      if [",", ";"].include? i
+      if i == ','
         active
+      elsif i == ';'
+        last
       elsif i == '0'
         all[9]
       elsif i == '-'
