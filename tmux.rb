@@ -30,7 +30,11 @@ module Tmux
     end
 
     def to_alfred_title
-      "#{parent.to_short_title} #{@dir} $   #{@command}"
+      "#{parent.to_short_title} $ #{@command}"
+    end
+
+    def to_alfred_subtitle
+      "#{@dir}"
     end
   end
 
@@ -184,10 +188,13 @@ module Tmux
     def process
       #http://stackoverflow.com/questions/9560768/how-do-you-use-unicode-characters-within-a-regular-expression-in-ruby
       # \uE0B0 = 
+      @dir = nil
       lines = buffer.lines
       case lines.last.encode('utf-8', 'utf-8')
       when /(^ [A-Z]+ \uE0B0)|\uE0A1/            then "vim"
-      when / ([^\uE0B0]*[\/~][^\uE0B0]*) \uE0B0/ then "#{$1} $"
+      when / ([^\uE0B0]*[\/~][^\uE0B0]*) \uE0B0/ then
+        @dir = $1
+        "$"
       when /\$( |$)/                             then lines.last
       else
         if lines[-2] && lines[-2].encode('utf-8', 'utf-8') =~ /(^ [A-Z]+ \uE0B0)|\uE0A1/
@@ -232,13 +239,17 @@ module Tmux
     end
 
     def to_alfred_title
-      title = "#{@parent.to_alfred_title}  => Pane #{@index}"
+      title = "#{to_short_title}"
       if @active
         title += " * "
       else
         title += "   "
       end
       "#{title} #{process}"
+    end
+
+    def to_alfred_subtitle
+      @dir
     end
 
     def to_alfred_arg

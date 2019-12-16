@@ -24,12 +24,13 @@ builder = Nokogiri::XML::Builder.new do |xml|
       pane = [',', ';'].include?(pane_arg) ? window.active_pane : window.panes[pane_arg.to_i - 1]
       arg = "#{pane.to_alfred_arg} #{command}"
       xml.item(arg: arg, uid: pane.to_alfred_uid, autocomplete: pane.to_alfred_autocomplete) do
-        xml.title pane.to_alfred_title.gsub(/<[^>]+>/, '')
+        xml.title pane.to_alfred_title.gsub(/<[^>]+>/, '').gsub(' * $', '$').gsub('   $', '$')
       end
       pane.history.each do |entry|
         next if command and entry.command !~ /#{command.gsub(//, '.*')}/i
         xml.item(arg: entry.to_alfred_arg, uid: entry.to_alfred_arg) do
           xml.title entry.to_alfred_title
+          xml.subtitle entry.to_alfred_subtitle
         end
       end
     elsif window_arg
@@ -39,6 +40,7 @@ builder = Nokogiri::XML::Builder.new do |xml|
           arg = "#{pane.to_alfred_arg} #{command}"
           xml.item(arg: arg, uid: pane.to_alfred_uid, autocomplete: pane.to_alfred_autocomplete) do
             xml.title pane.to_alfred_title.gsub(/<[^>]+>/, '')
+            xml.subtitle pane.to_alfred_subtitle
           end
         end
       else
@@ -57,6 +59,7 @@ builder = Nokogiri::XML::Builder.new do |xml|
         xml.item(arg: arg, uid: window.to_alfred_uid, autocomplete: window.to_alfred_autocomplete) do
           xml.title window.to_alfred_title
           xml.subtitle window.to_alfred_subtitle
+          # xml.icon 'test'
         end
       end
     end
