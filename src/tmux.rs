@@ -24,14 +24,21 @@ impl Window {
     /// 12: Alfred *Z (3 panes) [238x80] [layout 473e,238x80,0,0{157x80,0,0,38,80x80,158,0[80x41,158,0,39,80x38,158,42,40]}] @13 (active)
     pub fn new(representation: &str) -> Window {
         lazy_static! {
-            static ref RE: Regex = Regex::new(r"(?x)
+            static ref WINDOW_RE: Regex = Regex::new(r"(?x)
+                ^(?P<index>[\d]+):\s+
+                 (?P<name>[^(]+)\s+
+                 (?P<last>-)?
+                 (?P<active>\*)?
+                 Z?\s+\(
             ").unwrap();
         }
 
-        let index = 0;
-        let name = "".to_string();
-        let is_active = true;
-        let is_last = false;
+        let cap = WINDOW_RE.captures(representation).unwrap();
+        let index = cap.name("index").map(|cap| cap.as_str().parse::<u32>().unwrap()).unwrap();
+        let name = cap.name("name").map(|cap| cap.as_str().parse::<String>().unwrap()).unwrap();
+        let is_active = cap.name("active").is_some();
+        let is_last = cap.name("last").is_some();
+
         Window {
             index, name, is_active, is_last
         }
@@ -44,6 +51,7 @@ mod tests {
 
     #[test]
     fn it_works() {
-        let window = Window::new("");
+        let window = Window::new("12: Alfred *Z (3 panes) [238x80] [layout 473e,238x80,0,0{157x80,0,0,38,80x80,158,0[80x41,158,0,39,80x38,158,42,40]}] @13 (active)");
+        assert_eq!(window.name, "Alfred");
     }
 }
