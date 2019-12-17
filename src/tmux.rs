@@ -1,10 +1,36 @@
 use regex::Regex;
+use std::process::Command;
+
+pub struct Tmux {
+    pub windows: Vec<Window>,
+}
+
+impl Tmux {
+    pub fn new() -> Tmux {
+        let output = Command::new("tmux")
+            .arg("list-windows")
+            .output().unwrap_or_else(|e| {
+                panic!("Failed to execute process: {}", e)
+            });
+        if !output.status.success() {
+            let s = String::from_utf8_lossy(&output.stderr);
+            panic!("Failed to execute process: {}", s)
+        }
+
+        let s = String::from_utf8_lossy(&output.stdout);
+        let windows = s.trim().split("\n").collect::<Vec<&str>>().into_iter().map(|line| Window::new(line)).collect();
+        Tmux {
+            windows,
+        }
+    }
+}
 
 pub struct Window {
-    index: u32,
-    name: String,
-    is_active: bool,
-    is_last: bool,
+    pub index: u32,
+    pub name: String,
+    pub is_active: bool,
+    pub is_last: bool,
+    pub panes: Vec<Pane>,
 }
 
 impl Window {
@@ -26,23 +52,63 @@ impl Window {
         lazy_static! {
             static ref WINDOW_RE: Regex = Regex::new(r"(?x)
                 ^(?P<index>[\d]+):\s+
-                 (?P<name>[^(]+)\s+
+                 (?P<name>[^(\-\*Z]+)?\s+
                  (?P<last>-)?
                  (?P<active>\*)?
-                 Z?\s+\(
+                 Z?\s*\(
             ").unwrap();
         }
 
         let cap = WINDOW_RE.captures(representation).unwrap();
         let index = cap.name("index").map(|cap| cap.as_str().parse::<u32>().unwrap()).unwrap();
-        let name = cap.name("name").map(|cap| cap.as_str().parse::<String>().unwrap()).unwrap();
+        let name_ = cap.name("name").map(|cap| cap.as_str().parse::<String>().unwrap());
+        let name = if name_.is_some() {
+                name_.unwrap()
+            } else {
+                "".to_string()
+            };
         let is_active = cap.name("active").is_some();
         let is_last = cap.name("last").is_some();
+        let panes = vec![];
 
         Window {
-            index, name, is_active, is_last
+            index, name, is_active, is_last, panes,
         }
     }
+
+    pub fn load_panes(&mut self) {
+        let output = Command::new("tmux")
+            .arg("list-panes")
+            .arg("-t").arg(self.index.to_string())
+            .output().unwrap_or_else(|e| {
+                panic!("Failed to execute process: {}", e)
+            });
+        if !output.status.success() {
+            let s = String::from_utf8_lossy(&output.stderr);
+            panic!("Failed to execute process: {}", s)
+        }
+
+        let s = String::from_utf8_lossy(&output.stdout);
+        self.panes = s.split("\n").collect::<Vec<&str>>().into_iter().map(|line| Pane::new(line)).collect();
+    }
+}
+
+pub struct Pane {
+    pub index: u32,
+    pub active: bool,
+}
+
+impl Pane {
+    pub fn new(representation: &str) -> Pane {
+        let index = 0;
+        let active = false;
+        Pane {
+            index, active,
+        }
+    }
+}
+
+pub struct PaneHistory {
 }
 
 #[cfg(test)]
