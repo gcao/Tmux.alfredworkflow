@@ -34,8 +34,8 @@ pub struct Window {
 }
 
 impl Window {
-    /// @representation is individual line of "tmux list-windows" output
-    /// 
+    /// representation is individual line of "tmux list-windows" output
+    ///
     /// 1: First  (3 panes) [238x80] [layout 8cf3,238x80,0,0{157x80,0,0,3,80x80,158,0[80x39,158,0,4,80x40,158,40,5]}] @2
     /// 2: DEV Z (4 panes) [238x80] [layout a0fa,238x80,0,0{157x80,0,0[157x39,0,0,6,157x40,0,40,7],80x80,158,0[80x39,158,0,8,80x40,158,40,9]}] @3
     /// 3: QA/PROD  (4 panes) [238x80] [layout f0ec,238x80,0,0{157x80,0,0[157x39,0,0,10,157x40,0,40,11],80x80,158,0[80x39,158,0,12,80x40,158,40,13]}] @4
@@ -51,7 +51,7 @@ impl Window {
     pub fn new(representation: &str) -> Window {
         lazy_static! {
             static ref WINDOW_RE: Regex = Regex::new(r"(?x)
-                ^(?P<index>[\d]+):\s+
+                ^(?P<index>\d+):\s+
                  (?P<name>[^(\-\*Z]+)?\s+
                  (?P<last>-)?
                  (?P<active>\*)?
@@ -89,21 +89,34 @@ impl Window {
         }
 
         let s = String::from_utf8_lossy(&output.stdout);
-        self.panes = s.split("\n").collect::<Vec<&str>>().into_iter().map(|line| Pane::new(line)).collect();
+        self.panes = s.trim().split("\n").collect::<Vec<&str>>().into_iter().map(|line| Pane::new(line)).collect();
     }
 }
 
 pub struct Pane {
     pub index: u32,
-    pub active: bool,
+    pub is_active: bool,
 }
 
 impl Pane {
+    /// representation is individual line of "tmux list-panes" output
+    ///
+    /// 0: [129x67] [history 6889/20000, 1466530 bytes] %1
+    /// 1: [204x67] [history 138/20000, 80566 bytes] %2 (active)
+    /// 2: [74x34] [history 595/20000, 499310 bytes] %3
     pub fn new(representation: &str) -> Pane {
-        let index = 0;
-        let active = false;
+        lazy_static! {
+            static ref PANE_RE: Regex = Regex::new(r"(?x)
+                ^(?P<index>\d+):.*
+                 (?P<active>\(active\))?
+            ").unwrap();
+        }
+
+        let cap = PANE_RE.captures(representation).unwrap();
+        let index = cap.name("index").map(|cap| cap.as_str().parse::<u32>().unwrap()).unwrap() + 1;
+        let is_active = cap.name("active").is_some();
         Pane {
-            index, active,
+            index, is_active,
         }
     }
 }
