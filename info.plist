@@ -80,7 +80,7 @@
 				<key>leftcursor</key>
 				<false/>
 				<key>modsmode</key>
-				<integer>0</integer>
+				<integer>2</integer>
 				<key>relatedAppsMode</key>
 				<integer>0</integer>
 			</dict>
@@ -207,7 +207,7 @@ osascript -e "tell application \"iTerm\" to activate"</string>
 				<key>leftcursor</key>
 				<false/>
 				<key>modsmode</key>
-				<integer>0</integer>
+				<integer>2</integer>
 				<key>relatedAppsMode</key>
 				<integer>0</integer>
 			</dict>

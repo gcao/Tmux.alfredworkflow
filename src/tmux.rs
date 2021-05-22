@@ -1,3 +1,4 @@
+use std::rc::{Rc, Weak};
 use regex::Regex;
 use std::process::Command;
 
@@ -21,6 +22,23 @@ impl Tmux {
         let windows = s.trim().split("\n").collect::<Vec<&str>>().into_iter().map(|line| Window::new(line)).collect();
         Tmux {
             windows,
+        }
+    }
+
+    pub fn load_panes() {
+        // tmux list-panes -s  # list panes in all windows
+        let output = Command::new("tmux")
+            .arg("list-panes")
+            .arg("-s")
+            .output().unwrap();
+        let s = String::from_utf8_lossy(&output.stdout);
+        // Output is like
+        // 1.0: [140x68] [history 0/20000, 0 bytes] %3
+        // 1.1: [63x33] [history 10/20000, 2136 bytes] %4 (active)
+        // 1.2: [63x34] [history 15/20000, 2776 bytes] %5
+        // 2.0: [204x68] [history 21/20000, 7935 bytes] %6 (active)
+
+        for line in s.trim().split("\n").collect::<Vec<&str>>().into_iter() {
         }
     }
 }
@@ -95,7 +113,9 @@ impl Window {
 
 pub struct Pane {
     pub index: u32,
+    pub index_all: String,
     pub is_active: bool,
+    pub lines: u32,
 }
 
 impl Pane {
@@ -108,15 +128,19 @@ impl Pane {
         lazy_static! {
             static ref PANE_RE: Regex = Regex::new(r"(?x)
                 ^(?P<index>\d+):.*
+                 history (?P<lines>\d+).*
+                 (?P<index_all>%\d+)
                  (?P<active>\(active\))?
             ").unwrap();
         }
 
         let cap = PANE_RE.captures(representation).unwrap();
         let index = cap.name("index").map(|cap| cap.as_str().parse::<u32>().unwrap()).unwrap() + 1;
+        let index_all = cap.name("index_all").map(|cap| cap.as_str().to_string()).unwrap();
         let is_active = cap.name("active").is_some();
+        let lines = cap.name("lines").map(|cap| cap.as_str().parse::<u32>().unwrap()).unwrap() + 1;
         Pane {
-            index, is_active,
+            index, index_all, is_active, lines,
         }
     }
 }

@@ -9,11 +9,22 @@ Usage:
   ruby #{__FILE__} 1.1 ls -l
   # Run 'ls' in active pane of active window
   ruby #{__FILE__} ls
+  # Rename window
+  ruby #{__FILE__} 1: Test
   USAGE
   exit 0
 end
 
-if ARGV[0] =~ /^(\d+)(\.(\d))?$/
+if ARGV[0] =~ /^(\d+):$/
+  ARGV.shift
+  window = $1
+  cmd = "#{Tmux::PATH} rename-window -t "
+  cmd += window.to_i == 0 ? '10' : window
+  cmd += ' "' + ARGV.join(" ") + ' "'
+  puts cmd
+  system cmd
+  exit
+elsif ARGV[0] =~ /^(\d+)(\.(\d))?$/
   ARGV.shift
   window, pane = $1, $3
   cmd = "#{Tmux::PATH} select-window -t "
