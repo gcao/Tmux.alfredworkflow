@@ -1,0 +1,278 @@
+#!/usr/bin/env gene
+
+(ns tmux
+  (var /PATH (env "TMUX_PATH" "/usr/local/bin/tmux"))
+  (var /LINES_TO_LOOK_BACK 1000)
+
+  (fn active_window _
+    (Window/active)
+  )
+
+  (class HistoryEntry
+    (method new [@parent @dir @command])
+
+    (method is_different_dir? _
+      (@dir != /@parent/@dir)
+    )
+
+    (method to_alfred_arg _
+      (if /.in_different_dir?
+        ("" /@parent/.to_alfred_arg " cd " /@dir "; " /@command)
+      else
+        ("" /@parent/.to_alfred_arg " " /@command)
+      )
+    )
+
+    (method to_alfred_title _
+      ("" /@parent/.to_short_title " $ " /@command)
+    )
+
+    (method to_alfred_subtitle _
+      ("" /@dir)
+    )
+  )
+
+  (class Window
+    (var _all)
+
+    (fn all _
+      (_all ||=
+        (((gene/os/exec ("" PATH " list-windows")).lines).map
+          (line -> (new Window))
+        )
+      )
+    )
+
+    (fn active _
+      (((all) .select (item -> item/@active)).@0)
+    )
+
+    (fn last _
+      (((all) .select (item -> item/@last)).@0)
+    )
+
+    (fn find i
+      (case i
+      when ","
+        (active)
+      when ";"
+        (last)
+      when "0"
+        ((all).@9)
+      when "-"
+        ((all).@10)
+      when "="
+        ((all).@11)
+      when #/^\d$/
+        ((all).@ (i/.to_i - 1))
+      else
+        (var found
+          ((all).select (window -> (window.name =~ ($regex ^^i ((i .replace " " ".* .*").replace /^\|$/ ".*")))))
+        )
+        (if (found/.size == 1)
+          found/@0
+        else
+          found
+        )
+      )
+    )
+
+    (method new representation
+      (if (representation =~ #/^(\d+):\s+([^(]+)?\s+\(/)
+        (@index = $~0)
+        (@name = ($~0 .trim))
+        (@active = (!!($name =~ #/\*Z?$/)
+        (@last = (!!($name =~ #/-Z?$/)
+        (@name = (((@name .replace #/Z$/ "").replace #/-$/ "").replace #/\*$/ ""))
+      else
+        (throw "Invalid representation: " representation)
+      )
+    )
+
+    (method panes _
+      (@panes ||=
+        ((gene/os/exec ("" PATH " list-panes -t " /@index)).map
+          (line -> (new Pane self line))
+        )
+      )
+    )
+
+    (method active_pane _
+      ((.panes).find (pane -> pane/.active))
+    )
+
+    (method to_aflred_arg _ /@index/.to_i)
+
+    (method to_alfred_autocomplete _
+      (if (/@index/.to_i == 11)
+        "-"
+      elif (/@index/.to_i == 12)
+        "="
+      else
+        /@index/.to_i
+      )
+    )
+
+    (method to_aflred_uid _ (gene/rand))
+
+    (method to_alfred_title _
+      (if /@active
+        ("" /@index ". <ACTIVE> " /@name)
+      elif /@last
+        ("" /@index ". <LAST> " /@name)
+      else
+        ("" /@index ". " @name)
+      )
+    )
+
+    (method to_alfred_subtitle _
+      ("      "
+        ((/@panes .map (pane ->
+          (var s pane/.index/.to_s)
+          (if pane/.active
+            (s = ("<" s "> "))
+          else
+            (s = (s .append ". "))
+          )
+          ("" s pane/.process)
+        )).join "    ")
+      )
+    )
+  )
+
+  (class Pane
+    (method new [@parent representation]
+      (if (representation =~ #/^(\d)+:[^\(]*(\(active\))?\s*$/)
+        (@index = (($~0 .to_i) + 1))
+        (@active = (!! $~1))
+      else
+        (throw "Invalid representation for pane: " representation)
+      )
+    )
+
+    (method buffer [@start = 0]
+      ((gene/os/exec ("" PATH " capture-pane -t:" /@parent/.index "." (/@index - 1) " -p -J -S " start_line")).trim)
+    )
+
+    (method dir _
+      (@dir ||=
+        (do
+          (var last_line /.buffer/.lines/.last)
+          (if (last_line =~ #/ ([^\uE0B0]*[\/~][^\uE0B0]*) \uE0B0/)
+            $~0
+          )
+        )
+      )
+    )
+
+    (method process _
+      (@dir = nil)
+      (var lines /.buffer/.lines)
+      (case /.lines/.last
+      when #/(^ [A-Z]+ \uE0B0)|\uE0A1/
+        "vim"
+      when #/ ([^\uE0B0]*[\/~][^\uE0B0]*) \uE0B0/
+        (@dir = $~0)
+        "$"
+      when #/\$( |$)/
+        /.lines/.last
+      else
+        (if (/.lines/@-2 && (/.lines/@-2 =~ #/(^ [A-Z]+ \uE0B0)|\uE0A1/))
+          "vim"
+        else
+          "Long-running process"
+        )
+      )
+    )
+
+    (method history _
+      (if (/.process =~ #/vim|long-running/i)
+        (return [])
+      )
+      (println ^^stderr "history")
+      (var history [])
+      (var s (.buffer (-1 * LINES_TO_LOOK_BACK)))
+      (var end_index s/.size)
+      (var try_count 50)
+      (while (history/.size < 20)
+        (try_count -= 1)
+        (if (try_count == 0)
+          (break)
+        )
+        (println ^^stderr end_index)
+        (end_index = (s .rindex #/( ([~\/][^\n\uE0B0]*)[^\n]*\uE0B0[ ]+([^\n\uE0B0]+)(\n|$))/, end_index))
+        (if not end_index
+          (break)
+        )
+        (var dir $~1)
+        (var cmd $~2)
+        (var matched $~0)
+        (var adjust matched/.size)
+        # 20 is added to fix some commands was skipped. This is still to be investigated
+        (if (adjust > 25)
+          (adjust -= 20)
+        )
+        (end_index -= adjust)
+        (var entry (new HistoryEntry self dir/.trim cmd/.trim))
+        (if (not (["f" "g"].contains entry/@command)) or (history .index (e -> (e/@command == entry/@command)))
+          (history .add entry)
+        )
+      )
+      history
+    )
+
+    (method to_alfred_title _
+      (var title /.to_short_title)
+      (if /@active
+        (title = (title .append " * "))
+      else
+        (title = (title .append "   "))
+      )
+      ("" title " " /.process)
+    )
+
+    (method to_alfred_subtitle _
+      /@dir
+    )
+
+    (method to_alfred_arg _
+      ("" /@parent/.to_alfred_arg "." /@index)
+    )
+
+    (method to_alfred_uid _
+      ("" /@parent/@index "." /@index)
+    )
+
+    (method to_alfred_autocomplete _
+      ("" /@parent/.to_alfred_autocomplete /@index)
+    )
+
+    (method to_short_title _
+      ("" /.to_alfred_uid " " /@parent/@name)
+    )
+  )
+)
+
+(fn main args...
+  (var pane (((tmux/Window .find "4") .panes).@1))
+  (println (pane .buffer -500))
+  ((pane/.history).each (entry ->
+    (println entry/.to_alfred_title)
+  ))
+)
+
+# (fn pane_content _
+#   ((gene/os/exec "/usr/local/bin/tmux capture-pane -p -J -S -500").trim)
+# )
+#
+# # Show output of current pane
+# (fn main args...
+#   (println ({
+#     ^items
+#       ((((pane_content).lines) .@ (-9 .. -1)) .map
+#         (item -> {
+#           ^title (if (item == "") " " else item)
+#         })
+#       )
+#   }.to_json))
+# )
