@@ -85,7 +85,7 @@
         (@last = (!!($name =~ #/-Z?$/)
         (@name = (((@name .replace #/Z$/ "").replace #/-$/ "").replace #/\*$/ ""))
       else
-        (throw "Invalid representation: " representation)
+        (throw ("Invalid representation: " representation))
       )
     )
 
@@ -146,12 +146,12 @@
         (@index = (($~0 .to_i) + 1))
         (@active = (!! $~1))
       else
-        (throw "Invalid representation for pane: " representation)
+        (throw ("Invalid representation for pane: " representation))
       )
     )
 
     (method buffer [@start = 0]
-      ((gene/os/exec ("" PATH " capture-pane -t:" /@parent/.index "." (/@index - 1) " -p -J -S " start_line")).trim)
+      ((gene/os/exec ("" PATH " capture-pane -t:" /@parent/.index "." (/@index - 1) " -p -J -S " start)).trim)
     )
 
     (method dir _
