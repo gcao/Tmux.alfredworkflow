@@ -1,7 +1,7 @@
 #!/usr/bin/env gene
 
 (ns tmux
-  (var /PATH (env "TMUX_PATH" "/usr/local/bin/tmux"))
+  (var /PATH ($env "TMUX_PATH" "/usr/local/bin/tmux"))
   (var /LINES_TO_LOOK_BACK 1000)
 
   (fn active_window _
@@ -12,7 +12,7 @@
     (method new [@parent @dir @command])
 
     (method is_different_dir? _
-      (@dir != /@parent/@dir)
+      (/@dir != /@parent/@dir)
     )
 
     (method to_alfred_arg _
@@ -37,18 +37,21 @@
 
     (fn all _
       (_all ||=
-        (((gene/os/exec ("" PATH " list-windows")).lines).map
-          (line -> (new Window))
+        (do
+          (var cmd ("" PATH " list-windows"))
+          ((((gene/os/exec cmd) .trim) .lines) .map
+            (line -> (new Window line))
+          )
         )
       )
     )
 
     (fn active _
-      (((all) .select (item -> item/@active)).@0)
+      (((all) .select (item -> item/@active)) .@0)
     )
 
     (fn last _
-      (((all) .select (item -> item/@last)).@0)
+      (((all) .select (item -> item/@last)) .@0)
     )
 
     (fn find i
@@ -58,16 +61,16 @@
       when ";"
         (last)
       when "0"
-        ((all).@9)
+        ((all) .@9)
       when "-"
-        ((all).@10)
+        ((all) .@10)
       when "="
-        ((all).@11)
+        ((all) .@11)
       when #/^\d$/
-        ((all).@ (i/.to_i - 1))
+        ((all) .@ (i/.to_i - 1))
       else
         (var found
-          ((all).select (window -> (window.name =~ ($regex ^^i ((i .replace " " ".* .*").replace /^\|$/ ".*")))))
+          ((all) .select (window -> (window.name =~ ($regex ^^i ((i .replace " " ".* .*") .replace /^\|$/ ".*")))))
         )
         (if (found/.size == 1)
           found/@0
@@ -80,10 +83,10 @@
     (method new representation
       (if (representation =~ #/^(\d+):\s+([^(]+)?\s+\(/)
         (@index = $~0)
-        (@name = ($~0 .trim))
-        (@active = (!!($name =~ #/\*Z?$/)
-        (@last = (!!($name =~ #/-Z?$/)
-        (@name = (((@name .replace #/Z$/ "").replace #/-$/ "").replace #/\*$/ ""))
+        (@name = ($~1 .trim))
+        (@active = (!! (/@name =~ #/\*Z?$/)))
+        (@last = (!! (/@name =~ #/-Z?$/)))
+        (@name = (((/@name .replace #/Z$/ "") .replace #/-$/ "") .replace #/\*$/ ""))
       else
         (throw ("Invalid representation: " representation))
       )
@@ -91,14 +94,14 @@
 
     (method panes _
       (@panes ||=
-        ((gene/os/exec ("" PATH " list-panes -t " /@index)).map
+        ((((gene/os/exec ("" PATH " list-panes -t " /@index)) .trim) .lines) .map
           (line -> (new Pane self line))
         )
       )
     )
 
     (method active_pane _
-      ((.panes).find (pane -> pane/.active))
+      ((.panes) .find (pane -> pane/.active))
     )
 
     (method to_aflred_arg _ /@index/.to_i)
@@ -121,21 +124,21 @@
       elif /@last
         ("" /@index ". <LAST> " /@name)
       else
-        ("" /@index ". " @name)
+        ("" /@index ". " /@name)
       )
     )
 
     (method to_alfred_subtitle _
       ("      "
         ((/@panes .map (pane ->
-          (var s pane/.index/.to_s)
+          (var s pane/@index/.to_s)
           (if pane/.active
             (s = ("<" s "> "))
           else
             (s = (s .append ". "))
           )
           ("" s pane/.process)
-        )).join "    ")
+        )) .join "    ")
       )
     )
   )
@@ -143,7 +146,7 @@
   (class Pane
     (method new [@parent representation]
       (if (representation =~ #/^(\d)+:[^\(]*(\(active\))?\s*$/)
-        (@index = (($~0 .to_i) + 1))
+        (@index = ($~0/.to_i + 1))
         (@active = (!! $~1))
       else
         (throw ("Invalid representation for pane: " representation))
@@ -151,7 +154,7 @@
     )
 
     (method buffer [@start = 0]
-      ((gene/os/exec ("" PATH " capture-pane -t:" /@parent/.index "." (/@index - 1) " -p -J -S " start)).trim)
+      ((gene/os/exec ("" PATH " capture-pane -t:" /@parent/@index "." (/@index - 1) " -p -J -S " start)) .trim)
     )
 
     (method dir _
@@ -254,22 +257,22 @@
 )
 
 (fn main args...
-  (var pane (((tmux/Window .find "4") .panes).@1))
+  (var pane (((tmux/Window/find "4") .panes) .@1))
   (println (pane .buffer -500))
-  ((pane/.history).each (entry ->
+  ((pane/.history) .each (entry ->
     (println entry/.to_alfred_title)
   ))
 )
 
 # (fn pane_content _
-#   ((gene/os/exec "/usr/local/bin/tmux capture-pane -p -J -S -500").trim)
+#   ((gene/os/exec "/usr/local/bin/tmux capture-pane -p -J -S -500") .trim)
 # )
 #
 # # Show output of current pane
 # (fn main args...
 #   (println ({
 #     ^items
-#       ((((pane_content).lines) .@ (-9 .. -1)) .map
+#       ((((pane_content) .lines) .@ (-9 .. -1)) .map
 #         (item -> {
 #           ^title (if (item == "") " " else item)
 #         })
