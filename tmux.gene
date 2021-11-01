@@ -70,7 +70,9 @@
         ((all) .@ (i/.to_i - 1))
       else
         (var found
-          ((all) .select (window -> (window.name =~ ($regex ^^i ((i .replace " " ".* .*") .replace /^\|$/ ".*")))))
+          ((all) .select
+            (window -> (window/.name =~ ($regex ^^i ((i .replace " " ".* .*") .replace /^\|$/ ".*"))))
+          )
         )
         (if (found/.size == 1)
           found/@0
@@ -87,21 +89,18 @@
         (@active = (!! (/@name =~ #/\*Z?$/)))
         (@last = (!! (/@name =~ #/-Z?$/)))
         (@name = (((/@name .replace #/Z$/ "") .replace #/-$/ "") .replace #/\*$/ ""))
+        (@panes =
+          ((((gene/os/exec ("" PATH " list-panes -t " /@index)) .trim) .lines) .map
+            (line -> (new Pane self line))
+          )
+        )
       else
         (throw ("Invalid representation: " representation))
       )
     )
 
-    (method panes _
-      (@panes ||=
-        ((((gene/os/exec ("" PATH " list-panes -t " /@index)) .trim) .lines) .map
-          (line -> (new Pane self line))
-        )
-      )
-    )
-
     (method active_pane _
-      ((.panes) .find (pane -> pane/.active))
+      ((/@panes) .find (pane -> pane/.active))
     )
 
     (method to_aflred_arg _ /@index/.to_i)
@@ -130,15 +129,17 @@
 
     (method to_alfred_subtitle _
       ("      "
-        ((/@panes .map (pane ->
-          (var s pane/@index/.to_s)
-          (if pane/.active
-            (s = ("<" s "> "))
-          else
-            (s = (s .append ". "))
+        ((/@panes .map
+          (pane ->
+            (var s pane/@index/.to_s)
+            (if pane/.active
+              (s = ("<" s "> "))
+            else
+              (s = (s .append ". "))
+            )
+            ("" s pane/.process)
           )
-          ("" s pane/.process)
-        )) .join "    ")
+        ) .join "    ")
       )
     )
   )
@@ -153,8 +154,9 @@
       )
     )
 
-    (method buffer [@start = 0]
-      ((gene/os/exec ("" PATH " capture-pane -t:" /@parent/@index "." (/@index - 1) " -p -J -S " start)) .trim)
+    (method buffer [start = 0]
+      (var cmd ("" PATH " capture-pane -t:" /@parent/@index "." (/@index - 1) " -p -J -S " start))
+      ((gene/os/exec cmd) .trim)
     )
 
     (method dir _
@@ -257,7 +259,7 @@
 )
 
 (fn main args...
-  (var pane (((tmux/Window/find "4") .panes) .@1))
+  (var pane ((tmux/Window/find "4") .@panes/0))
   (println (pane .buffer -500))
   ((pane/.history) .each (entry ->
     (println entry/.to_alfred_title)
