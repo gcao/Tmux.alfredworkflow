@@ -162,7 +162,7 @@
     (method dir _
       (@dir ||=
         (do
-          (var last_line /.buffer/.lines/.last)
+          (var last_line /.buffer/.lines/@-1)
           (if (last_line =~ #/ ([^\uE0B0]*[\/~][^\uE0B0]*) \uE0B0/)
             $~0
           )
@@ -173,14 +173,14 @@
     (method process _
       (@dir = nil)
       (var lines /.buffer/.lines)
-      (case /.lines/.last
+      (case lines/@-1
       when #/(^ [A-Z]+ \uE0B0)|\uE0A1/
         "vim"
       when #/ ([^\uE0B0]*[\/~][^\uE0B0]*) \uE0B0/
-        (@dir = $~0)
+        # TODO: (@dir = $~0)
         "$"
       when #/\$( |$)/
-        /.lines/.last
+        /.lines/@-1
       else
         (if (/.lines/@-2 && (/.lines/@-2 =~ #/(^ [A-Z]+ \uE0B0)|\uE0A1/))
           "vim"
