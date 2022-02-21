@@ -21,6 +21,19 @@
 				<false/>
 			</dict>
 		</array>
+		<key>7C013CCE-762C-404C-9AB4-CC453BC174F5</key>
+		<array>
+			<dict>
+				<key>destinationuid</key>
+				<string>48E893A7-CD75-413E-960B-E8876BEBB0EE</string>
+				<key>modifiers</key>
+				<integer>0</integer>
+				<key>modifiersubtext</key>
+				<string></string>
+				<key>vitoclose</key>
+				<false/>
+			</dict>
+		</array>
 		<key>B09293E6-A46E-4D5C-AAD0-ED37C7CC0DE4</key>
 		<array>
 			<dict>
@@ -106,6 +119,8 @@ osascript -e "tell application \"iTerm\" to activate"</string>
 				<false/>
 				<key>alfredfiltersresultsmatchmode</key>
 				<integer>0</integer>
+				<key>argumenttreatemptyqueryasnil</key>
+				<false/>
 				<key>argumenttrimmode</key>
 				<integer>0</integer>
 				<key>argumenttype</key>
@@ -144,7 +159,7 @@ osascript -e "tell application \"iTerm\" to activate"</string>
 			<key>uid</key>
 			<string>B09293E6-A46E-4D5C-AAD0-ED37C7CC0DE4</string>
 			<key>version</key>
-			<integer>2</integer>
+			<integer>3</integer>
 		</dict>
 		<dict>
 			<key>config</key>
@@ -269,6 +284,8 @@ osascript -e "tell application \"iTerm\" to activate"</string>
 				<false/>
 				<key>alfredfiltersresultsmatchmode</key>
 				<integer>0</integer>
+				<key>argumenttreatemptyqueryasnil</key>
+				<false/>
 				<key>argumenttrimmode</key>
 				<integer>0</integer>
 				<key>argumenttype</key>
@@ -305,6 +322,60 @@ osascript -e "tell application \"iTerm\" to activate"</string>
 			<key>uid</key>
 			<string>A4BC1408-D9AB-4C6E-93AA-F0C88BDEBC47</string>
 			<key>version</key>
+			<integer>3</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>action</key>
+				<integer>0</integer>
+				<key>argument</key>
+				<integer>0</integer>
+				<key>focusedappvariable</key>
+				<false/>
+				<key>focusedappvariablename</key>
+				<string></string>
+				<key>hotkey</key>
+				<integer>30</integer>
+				<key>hotmod</key>
+				<integer>393216</integer>
+				<key>hotstring</key>
+				<string>]</string>
+				<key>leftcursor</key>
+				<false/>
+				<key>modsmode</key>
+				<integer>2</integer>
+				<key>relatedAppsMode</key>
+				<integer>0</integer>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.trigger.hotkey</string>
+			<key>uid</key>
+			<string>7C013CCE-762C-404C-9AB4-CC453BC174F5</string>
+			<key>version</key>
+			<integer>2</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>concurrently</key>
+				<false/>
+				<key>escaping</key>
+				<integer>118</integer>
+				<key>script</key>
+				<string>/usr/local/bin/tmux resize-pane -Z</string>
+				<key>scriptargtype</key>
+				<integer>0</integer>
+				<key>scriptfile</key>
+				<string></string>
+				<key>type</key>
+				<integer>0</integer>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.action.script</string>
+			<key>uid</key>
+			<string>48E893A7-CD75-413E-960B-E8876BEBB0EE</string>
+			<key>version</key>
 			<integer>2</integer>
 		</dict>
 	</array>
@@ -325,6 +396,20 @@ osascript -e "tell application \"iTerm\" to activate"</string>
 			<integer>100</integer>
 			<key>ypos</key>
 			<integer>140</integer>
+		</dict>
+		<key>48E893A7-CD75-413E-960B-E8876BEBB0EE</key>
+		<dict>
+			<key>xpos</key>
+			<integer>505</integer>
+			<key>ypos</key>
+			<integer>590</integer>
+		</dict>
+		<key>7C013CCE-762C-404C-9AB4-CC453BC174F5</key>
+		<dict>
+			<key>xpos</key>
+			<integer>100</integer>
+			<key>ypos</key>
+			<integer>590</integer>
 		</dict>
 		<key>A4BC1408-D9AB-4C6E-93AA-F0C88BDEBC47</key>
 		<dict>
