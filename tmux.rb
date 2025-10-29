@@ -179,6 +179,8 @@ module Tmux
         last_line = buffer.lines.last
         if last_line.encode('utf-8', 'utf-8') =~ / ([^\uE0B0]*[\/~][^\uE0B0]*) \uE0B0/
           @dir = $1
+        # elif last_line =~ /\:(.*)\$/
+        #   @dir = $1
         end
       end
 

@@ -21,6 +21,19 @@
 				<false/>
 			</dict>
 		</array>
+		<key>614D59AB-A440-42D9-AA08-B67AEE0B980B</key>
+		<array>
+			<dict>
+				<key>destinationuid</key>
+				<string>B09293E6-A46E-4D5C-AAD0-ED37C7CC0DE4</string>
+				<key>modifiers</key>
+				<integer>0</integer>
+				<key>modifiersubtext</key>
+				<string></string>
+				<key>vitoclose</key>
+				<false/>
+			</dict>
+		</array>
 		<key>7C013CCE-762C-404C-9AB4-CC453BC174F5</key>
 		<array>
 			<dict>
@@ -86,6 +99,39 @@
 	<string>Tmux</string>
 	<key>objects</key>
 	<array>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>action</key>
+				<integer>0</integer>
+				<key>argument</key>
+				<integer>3</integer>
+				<key>argumenttext</key>
+				<string>,,</string>
+				<key>focusedappvariable</key>
+				<false/>
+				<key>focusedappvariablename</key>
+				<string></string>
+				<key>hotkey</key>
+				<integer>34</integer>
+				<key>hotmod</key>
+				<integer>393216</integer>
+				<key>hotstring</key>
+				<string>I</string>
+				<key>leftcursor</key>
+				<false/>
+				<key>modsmode</key>
+				<integer>2</integer>
+				<key>relatedAppsMode</key>
+				<integer>0</integer>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.trigger.hotkey</string>
+			<key>uid</key>
+			<string>614D59AB-A440-42D9-AA08-B67AEE0B980B</string>
+			<key>version</key>
+			<integer>2</integer>
+		</dict>
 		<dict>
 			<key>config</key>
 			<dict>
@@ -173,11 +219,11 @@ osascript -e "tell application \"iTerm\" to activate"</string>
 				<key>focusedappvariablename</key>
 				<string></string>
 				<key>hotkey</key>
-				<integer>34</integer>
+				<integer>31</integer>
 				<key>hotmod</key>
 				<integer>393216</integer>
 				<key>hotstring</key>
-				<string>I</string>
+				<string>O</string>
 				<key>leftcursor</key>
 				<false/>
 				<key>modsmode</key>
@@ -258,11 +304,11 @@ osascript -e "tell application \"iTerm\" to activate"</string>
 				<key>focusedappvariablename</key>
 				<string></string>
 				<key>hotkey</key>
-				<integer>41</integer>
+				<integer>0</integer>
 				<key>hotmod</key>
-				<integer>393216</integer>
+				<integer>0</integer>
 				<key>hotstring</key>
-				<string>:</string>
+				<string></string>
 				<key>leftcursor</key>
 				<false/>
 				<key>modsmode</key>
@@ -386,67 +432,76 @@ osascript -e "tell application \"iTerm\" to activate"</string>
 		<key>157128C9-A402-4810-92B8-5203D4C6909A</key>
 		<dict>
 			<key>xpos</key>
-			<integer>500</integer>
+			<real>500</real>
 			<key>ypos</key>
-			<integer>290</integer>
+			<real>290</real>
 		</dict>
 		<key>22E9A42F-5843-45F0-8BF2-ADFAE6F27156</key>
 		<dict>
 			<key>xpos</key>
-			<integer>100</integer>
+			<real>100</real>
 			<key>ypos</key>
-			<integer>140</integer>
+			<real>140</real>
 		</dict>
 		<key>48E893A7-CD75-413E-960B-E8876BEBB0EE</key>
 		<dict>
 			<key>xpos</key>
-			<integer>505</integer>
+			<real>505</real>
 			<key>ypos</key>
-			<integer>590</integer>
+			<real>590</real>
+		</dict>
+		<key>614D59AB-A440-42D9-AA08-B67AEE0B980B</key>
+		<dict>
+			<key>xpos</key>
+			<real>100</real>
+			<key>ypos</key>
+			<real>20</real>
 		</dict>
 		<key>7C013CCE-762C-404C-9AB4-CC453BC174F5</key>
 		<dict>
 			<key>xpos</key>
-			<integer>100</integer>
+			<real>100</real>
 			<key>ypos</key>
-			<integer>590</integer>
+			<real>590</real>
 		</dict>
 		<key>A4BC1408-D9AB-4C6E-93AA-F0C88BDEBC47</key>
 		<dict>
 			<key>xpos</key>
-			<integer>300</integer>
+			<real>300</real>
 			<key>ypos</key>
-			<integer>440</integer>
+			<real>440</real>
 		</dict>
 		<key>B09293E6-A46E-4D5C-AAD0-ED37C7CC0DE4</key>
 		<dict>
 			<key>xpos</key>
-			<integer>300</integer>
+			<real>300</real>
 			<key>ypos</key>
-			<integer>140</integer>
+			<real>140</real>
 		</dict>
 		<key>B4F32712-C109-4988-8891-30AC8AF57443</key>
 		<dict>
 			<key>xpos</key>
-			<integer>100</integer>
+			<real>100</real>
 			<key>ypos</key>
-			<integer>290</integer>
+			<real>290</real>
 		</dict>
 		<key>CD26DC93-1E46-4538-9BF8-23D4F87F1217</key>
 		<dict>
 			<key>xpos</key>
-			<integer>100</integer>
+			<real>100</real>
 			<key>ypos</key>
-			<integer>440</integer>
+			<real>440</real>
 		</dict>
 		<key>ED0B4832-AB12-4548-934D-105736FB57CD</key>
 		<dict>
 			<key>xpos</key>
-			<integer>500</integer>
+			<real>500</real>
 			<key>ypos</key>
-			<integer>140</integer>
+			<real>140</real>
 		</dict>
 	</dict>
+	<key>userconfigurationconfig</key>
+	<array/>
 	<key>webaddress</key>
 	<string></string>
 </dict>

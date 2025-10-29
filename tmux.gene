@@ -9,7 +9,7 @@
   )
 
   (class HistoryEntry
-    (method new [@parent @dir @command])
+    (method new [/parent /dir /command])
 
     (method is_different_dir? _
       (/dir != /parent/dir)
@@ -145,7 +145,7 @@
   )
 
   (class Pane
-    (method new [@parent representation]
+    (method new [/parent representation]
       (if (representation =~ #/^(\d)+:[^\(]*(\(active\))?\s*$/)
         (/index = ($~0/.to_i + 1))
         (/active = (!! $~1))
@@ -257,26 +257,26 @@
   )
 )
 
-# ($if_main
-#   (var pane ((tmux/Window/find "4") ./panes/0))
-#   (println (pane .buffer -500))
-#   (pane/.history .each (entry ->
-#     (println entry/.to_alfred_title)
-#   ))
-# )
-
-(fn pane_content _
-  ((gene/os/exec "/usr/local/bin/tmux capture-pane -p -J -S -500") .trim)
-)
-
-# Show output of current pane
 ($if_main
-  (println ({
-    ^items
-      ((((pane_content) .lines) ./ (-9 .. -1)) .map
-        (item -> {
-          ^title (if (item == "") " " else item)
-        })
-      )
-  }.to_json))
+  (var pane ((tmux/Window/find "4") ./panes/0))
+  (println (pane .buffer -500))
+  (pane/.history .each (entry ->
+    (println entry/.to_alfred_title)
+  ))
 )
+
+# (fn pane_content _
+#   ((gene/os/exec "/usr/local/bin/tmux capture-pane -p -J -S -500") .trim)
+# )
+# 
+# # Show output of current pane
+# ($if_main
+#   (println ({
+#     ^items
+#       ((((pane_content) .lines) ./ (-9 .. -1)) .map
+#         (item -> {
+#           ^title (if (item == "") " " else item)
+#         })
+#       )
+#   }.to_json))
+# )
